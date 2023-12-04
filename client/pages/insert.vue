@@ -78,8 +78,8 @@
       baseURL: 'http://localhost:5000',
       immediate: false,
       watch: false,
-      //body: formData
-      body: fd
+      body: formData
+      //body: fd
     });
 
     refresh();

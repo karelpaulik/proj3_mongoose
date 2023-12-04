@@ -32,13 +32,14 @@ const playerSchema = new mongoose.Schema({
         //1. Pokud klient atirbut neposílá, zastaví se default
         //2. Pokud klient atribut pošle s hotnotou "null", tak vyskočí chyba
         type: String,
-        required: true,
-        default: ''
+        // required: true,
+        // default: ''
     },
     age: {
         type: Number,
-        required: true,  
-        default: 0,
+        // required: true,  
+        // default: 0,
+
         // set: (v) => {   //když definuji seter, měl by setter končit: return ...
         //     if (v == 'null') {
         //         v=0;
