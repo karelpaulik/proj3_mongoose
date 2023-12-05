@@ -80,12 +80,6 @@
       watch: false,
       body: formData
       //body: fd
-      //asdf
-      //bbbb
-        //ccccc
-        //ddddd
-        //eeeee
-        //fffff
     });
 
     refresh();
