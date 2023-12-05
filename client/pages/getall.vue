@@ -29,6 +29,7 @@
   const { data } = await useFetch('/player', {
     method: 'get',
     baseURL: 'http://localhost:5000'
+    //change from home
   });
 
   console.log(data);
