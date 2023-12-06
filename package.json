@@ -1,0 +1,17 @@
+{
+  "name": "proj3_mongoose",
+  "version": "1.0.0",
+  "description": "Demonstration how nuxt.js (frontend) can work together with nodejs server (specifically expressjs). Server use mongoose as database.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "devindex": "concurrently --kill-others \"npm run --prefix ./server noderun\" \"npm run --prefix ./client dev\" ",
+    "prodindex": "concurrently --kill-others \"node server/indexMongoose.js \" \"npm run --prefix ./client dev \" "
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
