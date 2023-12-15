@@ -6,7 +6,7 @@ const app = express();
 const port = 5000;
 
 const mongoose = require('mongoose');
-const { Player } = require('./modelsMongoose.js');
+const { Player, File } = require('./modelsMongoose.js');
 mongoose.connect('mongodb+srv://mongo:mongo@cluster1.9yfpvna.mongodb.net/dbproj3?retryWrites=true&w=majority');
 
 // const { MongoClient } = require('mongodb');
@@ -45,15 +45,27 @@ app.post('/player', upload.array('file'), async(req, res) => {
     //         delete req.body[prop]
     //     }
     // }
-    // console.log(req.body);
+
+    //Sqlite:
     //const p = await Player.create(req.body);
+    // for (let item of req.files) {
+    //     const f = await File.create(item);
+    //     await f.setPlayer(p);        
+    // }
+    // res.send(req.obj);
 
     // //mongoose
     try {
         console.log("try blok začátek");
-        //const p = new Player(req.body);
-        //await p.save();
+
         const p = await Player.create(req.body);
+        for (let item of req.files) {
+            const f = await File.create(item);
+            //await f.setPlayer(p);   //Toto je vložení vazby v sequelize
+            await p.files.push(f._id);
+            await p.save();
+        }
+
         console.log("try blok konec");
     } catch(err) {
         console.log("catch blok");
@@ -70,24 +82,22 @@ app.post('/player', upload.array('file'), async(req, res) => {
     // console.log(result);
 
 
-    // req.files.forEach(async(item, ind, arr) => {
-    //     const f = await File.create(item);
-    //     await f.setPlayer(p);
-    // });
-    // res.send(req.obj);
+
+
     res.send(req.body);
 });
 
 app.get('/player', async(req, res) => {
     //const p = await Player.findAll({ include: { all: true, nested: true } });
-    const p = await Player.find();
+    const p = await Player.find().populate('files').exec();
     //console.log(JSON.parse(JSON.stringify(p)));
     res.send(p);
 });
 
 app.get('/player/:id', async(req, res) => {
     //const p = await Player.findByPk(req.params.id, { include: { all: true, nested: true } });
-    const p = await Player.findById(req.params.id);
+    //const p = await Player.findById(req.params.id);   //findById nemá middleware
+    const p = await Player.findOne({_id: req.params.id});
     res.send(p);
 });
 
@@ -98,18 +108,20 @@ app.put('/player/:id', async(req, res) => {
 });
 
 app.delete('/player/:id', async(req, res) => {
-    const p = await Player.findByPk(req.params.id);
+    //const p = await Player.findByPk(req.params.id); //Sequelize
+    const p = await Player.findById(req.params.id);
     if (p) {
-        await p.destroy();        
+        //await p.destroy();   //Sequelize     
+        await p.deleteOne();
     }
     res.send(p);
 });
 
-
-app.get('/models_update', async(req, res) => {
-    await sync();
-    res.send('schema aktualized');
-});
+//Sequelize
+// app.get('/models_update', async(req, res) => {
+//     await sync();
+//     res.send('schema aktualized');
+// });
 
 app.get('/file', async(req, res) => {
     const f = await File.findAll({ include: { all: true, nested: true } });

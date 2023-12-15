@@ -1,4 +1,5 @@
 //const { Sequelize, DataTypes } = require('sequelize');
+const { Query } = require("mongoose");
 const mongoose = require("mongoose");
 //const fs = require('fs');
 
@@ -51,7 +52,8 @@ const playerSchema = new mongoose.Schema({
     isActive: Boolean, //{type: Boolean, required: true, default: false},
     city: [String],
     prefColor: String,
-    prefShape: String
+    prefShape: String,
+    files: [{type: mongoose.Schema.Types.ObjectId, ref: 'File'}]
 }, {});
 //playerSchema.set('validateBeforeSave', false);  //toto vypne validaci
 
@@ -68,13 +70,49 @@ playerSchema.pre('validate', function(next) {
     // if (!isNaN(this.age)) {
     //     this.age=Number(this.age)
     // }
-    console.log(this);
+    //console.log(this);
     next();   
+});
+
+//findById  - nemá middleware
+//deleteOne                     //Zde funguje: {document: true, query: false}
+//findOne
+//playerSchema.pre('deleteOne', {document: true, query: false}, function(next) {        //OK
+//playerSchema.pre('findOne', {document: true, query: false}, function(next) {            //NOK
+//playerSchema.post('findOne', function(next) {
+playerSchema.pre('findOne', async function(next) {          //fineOne: this má referenci na Query, ne na dokument. Níže ukázka, jak dostat ref. na dokument.
+    // console.log('playerSchema.pre');
+    // console.log(typeof this);
+    // console.log(this instanceof Query);
+    // console.log(this.constructor.name);     //Čeho to je instance
+    // const p = await this.model.find(this.getQuery());       //Nemůžu např. uvnitř "playerSchema.pre('findOne')" použít "findOne", protože pak vznikně nekonečná smyčka!!!!
+    // console.log(p);
+    // next();   
+});
+
+playerSchema.pre('deleteOne', {document: true, query: false}, async function(next) {
+    console.log('deleteOne------------------');
+    console.log(this);
+
+    // //TOTO FUNGUJE, ALE NA CELKEM DOST ŘÁDKŮ
+    // for (let file of this.files) {
+    //     //1. možnost
+    //     // let f = await File.findById(file);
+    //     // //await f.deleteOne();                  //Buď
+    //     // await File.deleteOne({ _id: file });    //Nebo (funguje obojí)
+
+    //     //2. možnost
+    //     //await File.findByIdAndDelete(file);         //Taky funguje
+
+    // }
+
+    //Třetí možnost - FUNGUJE, A JE JEN NA JEDNOM ŘÁDKU
+    await File.deleteMany({ _id: this.files});
+    next();
 });
 
 const Player = mongoose.model('Player', playerSchema)
 
-module.exports = { Player }
 //-----------------------------------------------------------------
 
 // const File = sequelize.define('file', {
@@ -105,6 +143,20 @@ module.exports = { Player }
 //     }
 // });
 
+const fileSchema = new mongoose.Schema({
+    fieldname: String,
+    originalname: String,
+    encoding: String,
+    mimetype: String,
+    destination: String,
+    filename: String,
+    path: String,
+    size: String
+}, {});
+
+
+const File = mongoose.model('File', fileSchema)
+
 // File.belongsTo(Player, {
 //     //onDelete: 'CASCADE',
 //     //hooks: true
@@ -116,3 +168,5 @@ module.exports = { Player }
 // });
 
 // module.exports = { Player, File, sync }
+
+module.exports = { Player, File }
