@@ -102,8 +102,17 @@ app.get('/player/:id', async(req, res) => {
 });
 
 app.put('/player/:id', async(req, res) => {
-    const p = await Player.findByPk(req.params.id);
-    await p.update(req.body);
+    //const p = await Player.findByPk(req.params.id);
+    //await p.update(req.body);
+
+    //mongoose:
+    const filter = {_id: req.params.id};
+    const update = req.body;
+    console.log(filter);
+    console.log(update);
+    const p = await Player.findOneAndUpdate(filter, update, {
+        new: true
+    });
     res.send(p);
 });
 
@@ -112,7 +121,7 @@ app.delete('/player/:id', async(req, res) => {
     const p = await Player.findById(req.params.id);
     if (p) {
         //await p.destroy();   //Sequelize     
-        await p.deleteOne();
+        await p.deleteOne();    //Mongoose
     }
     res.send(p);
 });
