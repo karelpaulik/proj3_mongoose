@@ -97,7 +97,7 @@ app.get('/player', async(req, res) => {
 app.get('/player/:id', async(req, res) => {
     //const p = await Player.findByPk(req.params.id, { include: { all: true, nested: true } });
     //const p = await Player.findById(req.params.id);   //findById nemá middleware
-    const p = await Player.findOne({_id: req.params.id});
+    const p = await Player.findOne({_id: req.params.id}).populate('files').exec();
     res.send(p);
 });
 

@@ -1,7 +1,7 @@
 //const { Sequelize, DataTypes } = require('sequelize');
 const { Query } = require("mongoose");
 const mongoose = require("mongoose");
-//const fs = require('fs');
+const fs = require('fs');
 
 // const sequelize = new Sequelize({
 //     dialect: 'sqlite',
@@ -94,20 +94,26 @@ playerSchema.pre('deleteOne', {document: true, query: false}, async function(nex
     console.log('deleteOne------------------');
     console.log(this);
 
-    // //TOTO FUNGUJE, ALE NA CELKEM DOST ŘÁDKŮ
-    // for (let file of this.files) {
-    //     //1. možnost
-    //     // let f = await File.findById(file);
-    //     // //await f.deleteOne();                  //Buď
-    //     // await File.deleteOne({ _id: file });    //Nebo (funguje obojí)
+    //TOTO FUNGUJE, ALE NA CELKEM DOST ŘÁDKŮ
+    for (let file of this.files) {
+        //1. možnost
+        let f = await File.findById(file);
+        await f.deleteOne();                  //Buď     //middleware: document middleware
+        // await File.deleteOne({ _id: file });    //Nebo (funguje obojí) //Pozor, middleware: query middleware
 
-    //     //2. možnost
-    //     //await File.findByIdAndDelete(file);         //Taky funguje
+        //2. možnost
+        //await File.findByIdAndDelete(file);         //Taky funguje
 
-    // }
+    }
 
-    //Třetí možnost - FUNGUJE, A JE JEN NA JEDNOM ŘÁDKU
-    await File.deleteMany({ _id: this.files});
+    //3. možnost - FUNGUJE, A JE JEN NA JEDNOM ŘÁDKU
+    //await File.deleteMany({ _id: this.files});
+
+    //KTEROU METODU VYBRAT:
+    //První metoda (Document middleware) má velkou výhodu i když je zde na více řádků:
+    //Totiž "Document middleware" vrací objekt, tj. v tomto případě document "file". Tzn. Zde zde mám i atribut "path", který potřebuji pro smazání souboru.
+    //Druhá a třetí metoda "Query middleware" vrací query. Tudíž přes "this.getFilter()" se dostanu na "id" jednotlivých souborů, ale ne na "path". "path" je nutno v dalším kroku vyhledata.
+
     next();
 });
 
@@ -154,6 +160,39 @@ const fileSchema = new mongoose.Schema({
     size: String
 }, {});
 
+//Tato metoda zatím soubory nemaže.
+fileSchema.pre('deleteMany', {document: false, query: true}, async function(next) {
+    console.log('fileSchema - deleteMany------------------');
+    console.log('getFilter---------------------')
+    console.log(this.getFilter());
+
+    for (let file of this.getFilter()._id) {
+        console.log(file)
+    }
+
+    next();
+});
+
+//Tato metoda již funguje, maže soubory
+fileSchema.pre('deleteOne', {document: true, query: false}, async function(next) {
+    console.log('fileSchema - deleteOne------------------');
+    //console.log(this);
+    const file=this;
+
+    if (file.path) {
+        fs.unlink(file.path, function (err) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(`Deleted: ${file.path}`);
+            }
+        });
+    } else {
+        console.log('Path to the file does not exist')
+    }
+
+    next();
+});
 
 const File = mongoose.model('File', fileSchema)
 
