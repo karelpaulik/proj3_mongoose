@@ -13,6 +13,8 @@
 <script setup>
   import { ref, reactive }  from 'vue';
 
+  const runtimeConfig = useRuntimeConfig()
+
   const fd = reactive({
     fName: '',
     lName: '',
@@ -22,7 +24,7 @@
 
   const { data, refresh } = await useFetch( () => '/player', {
     method: 'post',
-    baseURL: 'http://localhost:5000',
+    baseURL: runtimeConfig.public.baseURL,
     immediate: false,
     watch: false,
     body: fd

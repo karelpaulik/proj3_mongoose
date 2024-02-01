@@ -18,7 +18,8 @@
         </div>
         <div v-if="rec.files">
           <div v-for="file in rec.files">
-            <img :src="`http://localhost:5000/${file.path}`" width="400">
+            <!-- <img :src="`http://localhost:5000/${file.path}`" width="400"> -->
+            <img :src="`${runtimeConfig.public.baseURL}/${file.path}`" width="400">
           </div>
         </div>
         <hr>
@@ -27,10 +28,12 @@
   </template>
   
   <script setup>
+  const runtimeConfig = useRuntimeConfig()
 
   const { data } = await useFetch('/player', {
     method: 'get',
-    baseURL: 'http://localhost:5000'
+    //baseURL: 'http://localhost:5000'
+    baseURL: runtimeConfig.public.baseURL
     //change from home
   });
 

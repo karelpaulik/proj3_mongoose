@@ -25,7 +25,7 @@
         
         <div v-if="data.files">
           <div v-for="file in data.files">
-            <img :src="`http://localhost:5000/${file.path}`" width="400">
+            <img :src="`${runtimeConfig.public.baseURL}/${file.path}`" width="400">
           </div>
         </div>
 
@@ -36,19 +36,20 @@
 <script setup>
   import { ref }  from 'vue';
 
+  const runtimeConfig = useRuntimeConfig()
   const pk = ref('')
 
   //const { data, refresh } = await useFetch( `/player/${pk.value}`, {  //Toto nefunguje
   const { data, refresh } = await useFetch( () => '/player/' + pk.value, {  
     method: 'get',
-    baseURL: 'http://localhost:5000',
+    baseURL: runtimeConfig.public.baseURL,
     immediate: false,
     watch: false
   });
 
   const { data: dtUpdate, refresh: rfUpdate } = await useFetch( () => '/player/' + pk.value, {
     method: 'put',
-    baseURL: 'http://localhost:5000',
+    baseURL: runtimeConfig.public.baseURL,
     immediate: false,
     watch: false,
     body: data

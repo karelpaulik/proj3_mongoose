@@ -8,11 +8,12 @@
 <script setup>
   import { ref }  from 'vue';
 
+  const runtimeConfig = useRuntimeConfig()
   const pk = ref('')
 
   const { data, refresh } = await useFetch( () => '/player/' + pk.value, {
     method: 'delete',
-    baseURL: 'http://localhost:5000',
+    baseURL: runtimeConfig.public.baseURL,
     immediate: false,
     watch: false
   });

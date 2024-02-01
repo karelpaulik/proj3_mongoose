@@ -33,6 +33,8 @@
 <script setup>
   import { reactive }  from 'vue';
 
+  const runtimeConfig = useRuntimeConfig()
+
   const fd = reactive({
     //Pozor je rozdíl, jestli u stringu zadám jako počáteční hodnotu: '', nebo null
     //Pozor, stejně tak je rozdíl u čísla
@@ -49,7 +51,7 @@
 
   // const { data, refresh } = await useFetch( () => '/player', {
   //   method: 'post',
-  //   baseURL: 'http://localhost:5000',
+  //   baseURL: 'runtimeConfig.public.baseURL',
   //   immediate: false,
   //   watch: false,
   //   body: fd
@@ -75,7 +77,7 @@
 
     const { data, refresh } = await useFetch( () => '/player', {
       method: 'post',
-      baseURL: 'http://localhost:5000',
+      baseURL: runtimeConfig.public.baseURL,
       immediate: false,
       watch: false,
       body: formData
