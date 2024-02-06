@@ -5,9 +5,9 @@ const fs = require('fs');
 const app = express();
 const port = 5000;
 
-const mongoose = require('mongoose');
+//const mongoose = require('mongoose');
 const { Player, File } = require('./modelsMongoose.js');
-mongoose.connect('mongodb+srv://mongo:mongo@cluster1.9yfpvna.mongodb.net/dbproj3?retryWrites=true&w=majority');
+//mongoose.connect('mongodb+srv://mongo:mongo@cluster1.9yfpvna.mongodb.net/dbproj3?retryWrites=true&w=majority');
 
 // const { MongoClient } = require('mongodb');
 // const client = new MongoClient('mongodb+srv://mongo:mongo@cluster1.9yfpvna.mongodb.net/?retryWrites=true&w=majority');

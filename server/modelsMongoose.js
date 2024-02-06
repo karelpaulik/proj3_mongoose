@@ -3,6 +3,8 @@ const { Query } = require("mongoose");
 const mongoose = require("mongoose");
 const fs = require('fs');
 
+mongoose.connect('mongodb+srv://mongo:mongo@cluster1.9yfpvna.mongodb.net/dbproj3?retryWrites=true&w=majority');
+
 // const sequelize = new Sequelize({
 //     dialect: 'sqlite',
 //     storage: 'db.sqlite',
