@@ -20,10 +20,6 @@ const Player = sequelize.define('player', {
     city: DataTypes.JSON,   //JSON je způsob, jak uložit array
     prefColor: DataTypes.STRING,
     prefShape: DataTypes.STRING
-    // destination: DataTypes.STRING,
-    // filename: DataTypes.STRING,
-    // filenames: DataTypes.JSON,
-    // path: DataTypes.STRING
 });
 
 const File = sequelize.define('file', {

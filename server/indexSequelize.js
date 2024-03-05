@@ -60,13 +60,7 @@ app.delete('/player/:id', async(req, res) => {
     }
     res.send(p);
 });
-
-
-app.get('/models_update', async(req, res) => {
-    await sync();
-    res.send('schema aktualized');
-});
-
+//------------------------------------------------------------------------
 app.get('/file', async(req, res) => {
     const f = await File.findAll({ include: { all: true, nested: true } });
     res.send(f);
@@ -83,6 +77,11 @@ app.delete('/file/:id', async(req, res) => {
         await f.destroy();        
     }
     res.send(f);
+});
+//------------------------------------------------------------------------
+app.get('/models_update', async(req, res) => {
+    await sync();
+    res.send('schema aktualized');
 });
 
 app.listen(port, () => console.log(`server listening on port: ${port}`));

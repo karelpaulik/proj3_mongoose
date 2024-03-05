@@ -1,48 +1,22 @@
-//const { Sequelize, DataTypes } = require('sequelize');
 const { Query } = require("mongoose");
 const mongoose = require("mongoose");
 const fs = require('fs');
 
 mongoose.connect('mongodb+srv://mongo:mongo@cluster1.9yfpvna.mongodb.net/dbproj3?retryWrites=true&w=majority');
 
-// const sequelize = new Sequelize({
-//     dialect: 'sqlite',
-//     storage: 'db.sqlite',
-//     //logging: false
-// });
-
-// async function sync() {
-//     await sequelize.sync({ alter: true });
-// };
-
-//----------------------------------------------------------------
-// const Player = sequelize.define('player', {
-//     fName: DataTypes.STRING,
-//     lName: DataTypes.STRING,
-//     age: DataTypes.INTEGER,
-//     richText: DataTypes.STRING,
-//     isActive: DataTypes.BOOLEAN,
-//     city: DataTypes.JSON,   //JSON je způsob, jak uložit array
-//     prefColor: DataTypes.STRING,
-//     prefShape: DataTypes.STRING
-// });
-
 const playerSchema = new mongoose.Schema({
     fName: String,
     lName: {
-        //když zadám "required: true", měl bych zadat i default pro případ, když by ho někdo nezadal.
-        //Když zadáno "required + default", pak pozor:
-        //1. Pokud klient atirbut neposílá, zastaví se default
-        //2. Pokud klient atribut pošle s hotnotou "null", tak vyskočí chyba
         type: String,
         // required: true,
         // default: ''
+        //když zadám "required: true", měl bych zadat i default pro případ, když by ho někdo nezadal.
+        //Když zadáno "required + default", pak pozor:
+        //1. Pokud klient atirbut neposílá, nastaví se default
+        //2. Pokud klient atribut pošle s hotnotou "null", tak vyskočí chyba
     },
     age: {
         type: Number,
-        // required: true,  
-        // default: 0,
-
         // set: (v) => {   //když definuji seter, měl by setter končit: return ...
         //     if (v == 'null') {
         //         v=0;
@@ -123,34 +97,6 @@ const Player = mongoose.model('Player', playerSchema)
 
 //-----------------------------------------------------------------
 
-// const File = sequelize.define('file', {
-//     fieldname: DataTypes.STRING,
-//     originalname: DataTypes.STRING,
-//     encoding: DataTypes.STRING,
-//     mimetype: DataTypes.STRING,
-//     destination: DataTypes.STRING,
-//     filename: DataTypes.STRING,
-//     path: DataTypes.STRING,
-//     size: DataTypes.BIGINT
-// }, {
-//     hooks: {
-//         beforeDestroy: (file, options) => {
-//             //console.log('Hook: file - beforeDestroy');
-//             if (file.path) {
-//                 fs.unlink(file.path, function (err) {
-//                     if (err) {
-//                         console.log(err);
-//                     } else {
-//                         console.log(`Deleted: ${file.path}`);
-//                     }
-//                 });
-//             } else {
-//                 console.log('Path to the file does not exist')
-//             }
-//         }
-//     }
-// });
-
 const fileSchema = new mongoose.Schema({
     fieldname: String,
     originalname: String,
@@ -162,7 +108,8 @@ const fileSchema = new mongoose.Schema({
     size: String
 }, {});
 
-//Tato metoda zatím soubory nemaže.
+//Tato metoda soubory nemaže.
+//Toto je zde pro ukázku, jak se pracuje s "this" uvnitř "deleteMany". Jinak než uvnitř "deleteOne".
 fileSchema.pre('deleteMany', {document: false, query: true}, async function(next) {
     console.log('fileSchema - deleteMany------------------');
     console.log('getFilter---------------------')
@@ -197,17 +144,5 @@ fileSchema.pre('deleteOne', {document: true, query: false}, async function(next)
 });
 
 const File = mongoose.model('File', fileSchema)
-
-// File.belongsTo(Player, {
-//     //onDelete: 'CASCADE',
-//     //hooks: true
-//     //foreignKeyConstraint : true,
-// });
-// Player.hasMany(File, { 
-//     onDelete: 'CASCADE', 
-//     hooks: true,
-// });
-
-// module.exports = { Player, File, sync }
 
 module.exports = { Player, File }
